@@ -126,7 +126,7 @@ try:
         sp = str(args.key)
     else:
         sp_int = int(args.key)
-        if dp_int > 25:
+        if sp_int > 25:
             sp_int = sp_int % 26
     textp = ''
     if args.input_file is None:
