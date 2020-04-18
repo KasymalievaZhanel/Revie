@@ -43,7 +43,8 @@ try:
         etalon = dict_of_letter_frequency(tslov.lower())
         return etalon
 
-    def hack(textc: str, tslov: Dict[str, float]) -> Optional[List[str]]:
+    def hack(textc: str, tslov: Dict[str, float]) -> Dict[int, Optional
+                                                          [List[str]]]:
         pt = ''
         for i in range(26):
             pt = decrypt(textc, i)
@@ -58,10 +59,8 @@ try:
             sum.setdefault(key, []).append(sumk(tslov, perevod))
         print(sum)
         max_keys = sorted(sum, key=sum.get, reverse=False)
-        for m in max_keys:
-            print(m)
-            print("удалить")
-        all_pop = slov.get(max_keys[0])
+        all_pop = {}
+        all_pop[max_keys[0]] = slov.get(max_keys[0])
         return all_pop
 
     def sumk(frequency_text: Dict[str, float], frequency_cipher: Dict
@@ -123,7 +122,7 @@ try:
     args = parser.parse_args()
     oper = args.oper
     tcipr = args.cipher
-    if args.key.isdigit() is not True:
+    if args.key.isalpha() is True:
         sp = str(args.key)
     else:
         sp_int = int(args.key)
@@ -135,7 +134,7 @@ try:
             for line in f:
                 textp += line
             f.close()
-    c: Union[str, int, Optional[List[str]]] = 0
+    c: Union[str, int, Dict[int, Optional[List[str]]]] = 0
     if oper == 'encode'or oper == 'decode' or oper == 'hack':
         if oper == 'encode':
             if tcipr == 'caesar':
