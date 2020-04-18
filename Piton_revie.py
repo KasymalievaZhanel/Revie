@@ -132,7 +132,7 @@ parser.add_argument('--modul_file', nargs='?', help='type int|word')
 args = parser.parse_args()
 oper = args.oper
 tcipr = args.cipher
-if isinstance(args.key, str) is True:
+if args.key.isdigit() is not True:
     sp = str(args.key)
 else:
     sp_int = int(args.key)
