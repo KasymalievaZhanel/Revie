@@ -114,7 +114,7 @@ try:
     parser.add_argument('--key', default='0', help='type int|word')
     parser.add_argument('--input_file', help='type int|word')
     parser.add_argument('--output_file', help='type int|word')
-    parser.add_argument('--modul_file', nargs='?', help='type int|word')
+    parser.add_argument('--model_file', nargs='?', help='type int|word')
     args = parser.parse_args()
     oper = args.oper
     tcipr = args.cipher
@@ -145,7 +145,7 @@ try:
             else:
                 c = decrypt1(sp, textp)
         if oper == 'hack':
-            with open(str(args.modul_file), 'r') as w:
+            with open(str(args.model_file), 'r') as w:
                 txt: Dict[str, float] = json.loads(w.read())
                 w.close()
             c = hack(textp, txt)
@@ -157,7 +157,7 @@ try:
                 w.close()
     if oper == 'train':
         k = train(textp)
-        with open(str(args.modul_file), 'w') as w:
+        with open(str(args.model_file), 'w') as w:
             json.dump(k, w)
             w.close()
 except Exception:
