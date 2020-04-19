@@ -49,15 +49,11 @@ try:
         for i in range(26):
             pt = decrypt(textc, i)
             slov.setdefault(i, []).append(pt)
-        for h in slov.items():
-            print(h, "mi")
-            print("\n")
         sum: Dict[int, List[float]] = {}
         for key, value in slov.items():
             txt_r = str(value).lower()
             perevod = dict_of_letter_frequency(txt_r)
             sum.setdefault(key, []).append(sumk(tslov, perevod))
-        print(sum)
         max_keys = sorted(sum, key=sum.get, reverse=False)
         all_pop = {}
         all_pop[max_keys[0]] = slov.get(max_keys[0])
