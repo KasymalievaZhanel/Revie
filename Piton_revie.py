@@ -17,7 +17,7 @@ def encrypt_caesar(text: str, s: int) -> str:
                 res += chr((ord(char) + s - ord('A')) % len(TABULA_RECTA)
                            + ord('A'))
             else:
-                res += chr((ord(char) + s - 97) % len(TABULA_RECTA) + 97)
+                res += chr((ord(char) + s - ord('a')) % len(TABULA_RECTA) + ord('a'))
     return res
 
 
@@ -97,7 +97,7 @@ def decrypt_caesar(text: str, s: int) -> str:
                 res += chr((ord(char) + s - ord('A')) % len(TABULA_RECTA)
                            + ord('A'))
             else:
-                res += chr((ord(char) + s - 97) % len(TABULA_RECTA) + 97)
+                res += chr((ord(char) + s - ord('a')) % len(TABULA_RECTA) + ord('a'))
     return res
 
 
