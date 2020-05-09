@@ -15,7 +15,7 @@ class Cipher:
     def encrypt_caesar(self, text: str, s: int) -> str:
         res = ""
         for char in text:
-            if char not in TABULA_RECTA:
+            if char.lower() not in TABULA_RECTA:
                 res += char
             else:
                 if char.isupper():
@@ -31,7 +31,7 @@ class Cipher:
         result: List[str] = []
         space = 0
         for index, ch in enumerate(text):
-            if ch not in TABULA_RECTA:
+            if ch.lower() not in TABULA_RECTA:
                 space += 1
                 result.append(ch)
             else:
@@ -54,15 +54,15 @@ class Cipher:
         for i in range(NUMBER_OF_DECRYPTIONS):
             pt = self.decrypt_caesar(textc, i)
             self.slov.setdefault(i, []).append(pt)
-        sum: Dict[int, List[float]] = {}
+        summa: Dict[int, List[float]] = {}
         for key, value in self.slov.items():
             txt_r = str(value).lower()
             perevod = self.dict_of_letter_frequency(txt_r)
-            sum.setdefault(key, []).append(self.sum_of_squares(tslov,
-                                           perevod))
-        max_keys = sorted(sum, key=sum.get, reverse=False)
+            summa.setdefault(key, []).append(self.
+                                             sum_of_squares(tslov, perevod))
+        min_key = min(summa, key=lambda x: summa[x])
         all_pop = {}
-        all_pop[max_keys[0]] = self.slov.get(max_keys[0])
+        all_pop[min_key] = self.slov.get(min_key)
         return all_pop
 
     def sum_of_squares(self, frequency_text: Dict[str, float],
@@ -74,11 +74,10 @@ class Cipher:
         return sumh
 
     def dict_of_letter_frequency(self, s: str) -> Dict[str, float]:
-        set_for_text = set(s)
         counter = Counter(s)
         length = len(s)
         dict_of_letters = {}
-        for symbol in set_for_text:
+        for symbol in TABULA_RECTA:
             if symbol.isalpha() and length > 0:
                 dict_of_letters[symbol] = round(counter[symbol] / length, 5)
         return dict_of_letters
@@ -92,7 +91,7 @@ class Cipher:
         result: List[str] = []
         space = 0
         for index, ch in enumerate(text):
-            if ch not in TABULA_RECTA:
+            if ch.lower() not in TABULA_RECTA:
                 space += 1
                 result.append(ch)
             else:
@@ -110,25 +109,26 @@ def main() -> None:
     obj = Cipher()
     # Check the above function
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('action', type=str, help='{enc|dec|train|hack}')
-    parser.add_argument('--cipher', type=str, help='{caesar|vigenere}')
-    parser.add_argument('--key', default='0', help='type int|word')
-    parser.add_argument('--input_file', help='type int|word')
-    parser.add_argument('--output_file', help='type int|word')
-    parser.add_argument('--model_file', nargs='?', help='type int|word')
+    subparser = parser.add_subparsers(dest='subparser_name')
+    parser_encode = subparser.add_parser('encode')
+    parser_encode.add_argument('cipher', type=str, help='{caesar|vigenere}')
+    parser_encode.add_argument('key', default='0', help='type int|word')
+    parser_encode.add_argument('--input_file', help='type int|word')
+    parser_encode.add_argument('--output_file', help='type int|word')
+    parser_decode = subparser.add_parser('decode')
+    parser_decode.add_argument('cipher', type=str, help='{caesar|vigenere}')
+    parser_decode.add_argument('key', default='0', help='type int|word')
+    parser_decode.add_argument('--input_file', help='type int|word')
+    parser_decode.add_argument('--output_file', help='type int|word')
+    parser_train = subparser.add_parser('train')
+    parser_train.add_argument('--input_file', help='type int|word')
+    parser_train.add_argument('model_file')
+    parser_hack = subparser.add_parser('hack')
+    parser_hack.add_argument('--input_file', help='type int|word')
+    parser_hack.add_argument('--output_file', help='type int|word')
+    parser_hack.add_argument('model_file')
     args = parser.parse_args()
-    action = args.action
-    tcipr = args.cipher
-    if args.key.isalpha():
-        sp = str(args.key)
-    else:
-        try:
-            float(args.key)
-            sp_int = int(args.key)
-            sp_int = sp_int % NUMBER_OF_DECRYPTIONS
-        except ValueError:
-            print("Please enter a number or word for key")
-            return
+    action = args.subparser_name
     textp = ''
     if args.input_file is None:
         textp = input("Enter text: ")
@@ -137,7 +137,18 @@ def main() -> None:
             textp = f.read()
     maincharacter: Union[str, int, Dict[int, Optional[List[str]]]] = 0
     try:
-        if action in ('encode', 'decode', 'hack'):
+        if action in ('encode', 'decode'):
+            tcipr = args.cipher
+            if args.key.isalpha():
+                sp = str(args.key)
+            else:
+                try:
+                    float(args.key)
+                    sp_int = int(args.key)
+                    sp_int = sp_int % NUMBER_OF_DECRYPTIONS
+                except ValueError:
+                    print("Please enter a number or word for key")
+                    return
             try:
                 if action == 'encode':
                     if tcipr == 'caesar':
@@ -146,20 +157,25 @@ def main() -> None:
                         maincharacter = obj.encrypt_vigenere(sp, textp)
                     else:
                         raise SyntaxError
-                if action == 'decode':
+                elif action == 'decode':
                     if tcipr == 'caesar':
                         maincharacter = obj.decrypt_caesar(textp, sp_int)
                     elif tcipr == 'vigenere':
                         maincharacter = obj.decrypt_vegenere(sp, textp)
                     else:
                         raise SyntaxError
+                if args.output_file is None:
+                    print(maincharacter)
+                else:
+                    with open(str(args.output_file), 'w') as w:
+                        json.dump(maincharacter, w)
             except Exception:
                 print("Entered wrong cipher or key")
                 return
-            if action == 'hack':
-                with open(str(args.model_file), 'r') as w:
-                    txt: Dict[str, float] = json.loads(w.read())
-                maincharacter = obj.hack(textp, txt)
+        elif action == 'hack':
+            with open(str(args.model_file), 'r') as w:
+                txt: Dict[str, float] = json.loads(w.read())
+            maincharacter = obj.hack(textp, txt)
             if args.output_file is None:
                 print(maincharacter)
             else:
